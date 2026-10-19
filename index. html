@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#020805">
+<title>NEXUS | System Console</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#020604;color:#64ff98;font:14px monospace;padding:12px}
+main{max-width:850px;margin:auto;border:1px solid #176b39;background:#050b07;box-shadow:0 0 30px #00ff4430}
+header{padding:16px;background:#0b1c11;border-bottom:1px solid #176b39;display:flex;justify-content:space-between;gap:10px}
+h1{font-size:clamp(22px,5vw,34px);color:#c4ffd5}
+section{padding:14px;border-bottom:1px solid #123d24}
+small,.muted{color:#659878}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.card{padding:10px;border:1px solid #17472a;background:#07120b;overflow-wrap:anywhere}
+.card b{display:block;margin-top:8px}
+button,input{font:inherit;padding:12px;background:#07170c;color:#caffd8;border:1px solid #267a43;border-radius:3px}
+button{cursor:pointer;font-weight:bold}
+button:active{background:#174c2b}
+input{width:100%;margin:8px 0}
+#terminal{height:270px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#010302;padding:12px;line-height:1.65;font-size:12px;border:1px solid #153a23}
+.track{height:10px;background:#14271a;margin-top:10px}
+#bar{height:100%;width:0;background:#50ff8b;box-shadow:0 0 12px #50ff8b}
+#status{padding:10px 0}
+.alert{color:#ffd36b}
+footer{padding:12px;color:#598268;font-size:11px}
+@media(max-width:430px){body{padding:5px}.stats{grid-template-columns:1fr 1fr}.stats .card:last-child{grid-column:span 2}header{padding:11px}section{padding:10px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<strong>◈ NEXUS // SYS-CONSOLE</strong>
+<span id="live">● STANDBY</span>
+</header>
+<section>
+<small>SECURITY DIAGNOSTICS / BUILD 08.42</small>
+<h1>ENDPOINT ANALYSIS</h1>
+<p class="muted">Remote diagnostic interface · Simulation environment</p>
+<div class="stats">
+<div class="card"><small>SESSION</small><b id="sid">NX-0000-A17F</b></div>
+<div class="card"><small>LINK STATE</small><b id="link">IDLE</b></div>
+<div class="card"><small>PROCESS</small><b id="proc">WAITING</b></div>
+</div>
+</section>
+<section>
+<small>01 / SESSION CONFIGURATION</small>
+<input id="target" maxlength="40" value="ENDPOINT-07" aria-label="Endpoint label">
+<button id="start">▶ INITIALIZE SCAN</button>
+<button id="reset">RESET</button>
+</section>
+<section>
+<small>02 / SYSTEM EVENT STREAM</small>
+<div id="terminal" aria-live="polite">[SYS] Console initialized.
+[SYS] Waiting for operator command...</div>
+<div style="display:flex;justify-content:space-between;margin-top:12px">
+<span>ANALYSIS PROGRESS</span><b id="pct">0%</b>
+</div>
+<div class="track"><div id="bar"></div></div>
+<div id="status">● READY — AWAITING INITIALIZATION</div>
+</section>
+<section>
+<small>03 / SESSION REPORT</small>
+<div id="report" class="muted">No session completed.</div>
+</section>
+<footer>VISUAL SIMULATION ONLY · NO DEVICE ACCESS · NO DATA COLLECTION</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let job=null;
+const events=[
+"[BOOT] Loading diagnostic modules ............. OK",
+"[NET] Checking simulated link state ........... OK",
+"[ROUTE] Building fictional route table ........ OK",
+"[SCAN] Enumerating demo endpoints .............",
+"[SCAN] Service map generated .................. OK",
+"[AUTH] Checking demonstration token ........... OK",
+"[MEM] Allocating visual analysis buffer ....... OK",
+"[SEC] Running simulated security checks .......",
+"[CHECK] Integrity report compiled ............. OK",
+"[SYS] Finalizing diagnostic sequence .......... OK",
+"[DONE] Diagnostic simulation completed."
+];
+function reset(){
+if(job)clearInterval(job);
+job=null;$("start").disabled=false;
+$("bar").style.width="0%";$("pct").textContent="0%";
+$("link").textContent="IDLE";$("proc").textContent="WAITING";
+$("live").textContent="● STANDBY";
+$("status").textContent="● READY — AWAITING INITIALIZATION";
+$("status").className="";
+$("terminal").textContent="[SYS] Console initialized.\n[SYS] Waiting for operator command...";
+$("report").textContent="No session completed.";
+}
+$("reset").onclick=reset;
+$("start").onclick=()=>{
+reset();
+$("start").disabled=true;
+const name=$("target").value.replace(/[<>]/g,"").slice(0,40)||"ENDPOINT";
+$("sid").textContent="NX-"+Math.random().toString(16).slice(2,6).toUpperCase()+"-"+Math.random().toString(16).slice(2,6).toUpperCase();
+$("link").textContent="ACTIVE";
+$("proc").textContent="RUNNING";
+$("live").textContent="● PROCESS ACTIVE";
+$("terminal").textContent="[SESSION] "+name+"\n[SYS] Starting visual diagnostic...\n";
+let i=0;
+job=setInterval(()=>{
+if(i<events.length){
+$("terminal").textContent+=events[i]+"\n";
+$("terminal").scrollTop=$("terminal").scrollHeight;
+let p=Math.round((i+1)/events.length*100);
+$("bar").style.width=p+"%";$("pct").textContent=p+"%";
+$("status").textContent="● PROCESSING — "+p+"%";
+if(i>6)$("status").className="alert";
+i++;
+}else{
+clearInterval(job);job=null;
+$("start").disabled=false;
+$("link").textContent="COMPLETE";
+$("proc").textContent="FINISHED";
+$("live").textContent="● SESSION CLOSED";
+$("status").className="";
+$("status").textContent="● SIMULATION COMPLETE";
+$("report").textContent="Demo sequence finished. No real device was scanned or accessed.";
+$("terminal").textContent+="\n[SYS] Session closed.\n[SYS] Awaiting next command.\n";
+$("terminal").scrollTop=$("terminal").scrollHeight;
+}
+},750);
+};
+</script>
+</body>
+</html>
