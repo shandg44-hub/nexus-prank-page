@@ -1,134 +1,47 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#020805">
-<title>NEXUS | System Console</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>NovaCart — Demo Store</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#020604;color:#64ff98;font:14px monospace;padding:12px}
-main{max-width:850px;margin:auto;border:1px solid #176b39;background:#050b07;box-shadow:0 0 30px #00ff4430}
-header{padding:16px;background:#0b1c11;border-bottom:1px solid #176b39;display:flex;justify-content:space-between;gap:10px}
-h1{font-size:clamp(22px,5vw,34px);color:#c4ffd5}
-section{padding:14px;border-bottom:1px solid #123d24}
-small,.muted{color:#659878}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.card{padding:10px;border:1px solid #17472a;background:#07120b;overflow-wrap:anywhere}
-.card b{display:block;margin-top:8px}
-button,input{font:inherit;padding:12px;background:#07170c;color:#caffd8;border:1px solid #267a43;border-radius:3px}
-button{cursor:pointer;font-weight:bold}
-button:active{background:#174c2b}
-input{width:100%;margin:8px 0}
-#terminal{height:270px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#010302;padding:12px;line-height:1.65;font-size:12px;border:1px solid #153a23}
-.track{height:10px;background:#14271a;margin-top:10px}
-#bar{height:100%;width:0;background:#50ff8b;box-shadow:0 0 12px #50ff8b}
-#status{padding:10px 0}
-.alert{color:#ffd36b}
-footer{padding:12px;color:#598268;font-size:11px}
-@media(max-width:430px){body{padding:5px}.stats{grid-template-columns:1fr 1fr}.stats .card:last-child{grid-column:span 2}header{padding:11px}section{padding:10px}}
+:root{--ink:#101827;--muted:#687386;--line:#e4e8ef;--bg:#f5f7fb;--blue:#365cf5;--green:#16794a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+.top{max-width:980px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:850;font-size:22px;letter-spacing:-.7px}.brand span{color:var(--blue)}.pill{background:#eef1ff;color:#334fd0;border-radius:20px;padding:5px 9px;font-size:11px;font-weight:750}
+main{max-width:980px;margin:auto;padding:22px 16px 48px}.hero{background:linear-gradient(120deg,#172a60,#385ff0);color:white;border-radius:20px;padding:24px;margin-bottom:22px}.hero small{opacity:.8;letter-spacing:1px}.hero h1{font-size:clamp(26px,6vw,42px);line-height:1.05;margin:12px 0}.hero p{color:#e4eaff;max-width:560px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.product{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;min-width:0}.art{height:105px;border-radius:12px;display:grid;place-items:center;font-size:54px;background:linear-gradient(145deg,#edf1ff,#e6f8f0)}.product h2{font-size:16px;margin:12px 0 4px}.desc{font-size:12px;color:var(--muted);min-height:32px}.price{font-size:20px;font-weight:800;margin:10px 0}.btn{border:0;border-radius:10px;padding:12px 14px;font-weight:750;cursor:pointer;width:100%;background:var(--blue);color:white}.btn.secondary{background:#eef1f7;color:#273247}.notice{font-size:11px;color:var(--muted);text-align:center;margin:18px 0}.cartline{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+#checkout,#scan{display:none}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}.back{background:transparent;color:var(--blue);border:0;padding:6px 0;font-weight:700}
+#scan{background:#030806;color:#7aff9e;min-height:100vh;font:13px ui-monospace,SFMono-Regular,monospace;padding:18px}
+.scanwrap{max-width:780px;margin:auto;border:1px solid #1e6536;background:#050d08;padding:16px;box-shadow:0 0 30px #00ff3420}
+.scanhead{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #1e6536;padding-bottom:12px}.scanTitle{font-size:clamp(23px,6vw,34px);margin:22px 0 8px}.scanmuted{color:#70a985}.log{height:43vh;min-height:230px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:#010302;border:1px solid #174b29;padding:12px;line-height:1.7;margin:14px 0}.track{height:10px;background:#14321d}.bar{height:100%;width:0;background:#5cff8c;transition:width .25s}.warning{color:#ffd56b}.done{font-size:clamp(25px,7vw,42px);font-weight:900;margin:18px 0;color:#b4ffc8}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.art{height:125px}}
 </style>
 </head>
 <body>
-<main>
-<header>
-<strong>◈ NEXUS // SYS-CONSOLE</strong>
-<span id="live">● STANDBY</span>
-</header>
-<section>
-<small>SECURITY DIAGNOSTICS / BUILD 08.42</small>
-<h1>ENDPOINT ANALYSIS</h1>
-<p class="muted">Remote diagnostic interface · Simulation environment</p>
-<div class="stats">
-<div class="card"><small>SESSION</small><b id="sid">NX-0000-A17F</b></div>
-<div class="card"><small>LINK STATE</small><b id="link">IDLE</b></div>
-<div class="card"><small>PROCESS</small><b id="proc">WAITING</b></div>
-</div>
+<header id="storeHeader"><div class="top"><div class="brand">nova<span>cart</span></div><span class="pill">DEMO STORE</span></div></header>
+<main id="store">
+<section class="hero"><small>WEEKLY TECH PICKS</small><h1>Small upgrades.<br>Big everyday wins.</h1><p>Explore gadgets, desk essentials and audio accessories in this sample storefront.</p></section>
+<div style="display:flex;align-items:center;justify-content:space-between;margin:18px 0"><h2 style="margin:0">Popular picks</h2><span style="color:#687386;font-size:12px">4 demo products</span></div>
+<section class="grid">
+<article class="product"><div class="art">🎧</div><h2>Pulse Wireless Buds</h2><div class="desc">Compact audio · Charging case</div><div class="price">₹1,499</div><button class="btn" onclick="buy('Pulse Wireless Buds',1499)">Buy now</button></article>
+<article class="product"><div class="art">⌚</div><h2>Orbit Smart Watch</h2><div class="desc">Daily stats · Bright display</div><div class="price">₹2,299</div><button class="btn" onclick="buy('Orbit Smart Watch',2299)">Buy now</button></article>
+<article class="product"><div class="art">🔊</div><h2>Mini Boom Speaker</h2><div class="desc">Portable sound · USB-C</div><div class="price">₹999</div><button class="btn" onclick="buy('Mini Boom Speaker',999)">Buy now</button></article>
+<article class="product"><div class="art">⌨️</div><h2>Mech Mini Keyboard</h2><div class="desc">Compact layout · Tactile keys</div><div class="price">₹1,899</div><button class="btn" onclick="buy('Mech Mini Keyboard',1899)">Buy now</button></article>
 </section>
-<section>
-<small>01 / SESSION CONFIGURATION</small>
-<input id="target" maxlength="40" value="ENDPOINT-07" aria-label="Endpoint label">
-<button id="start">▶ INITIALIZE SCAN</button>
-<button id="reset">RESET</button>
-</section>
-<section>
-<small>02 / SYSTEM EVENT STREAM</small>
-<div id="terminal" aria-live="polite">[SYS] Console initialized.
-[SYS] Waiting for operator command...</div>
-<div style="display:flex;justify-content:space-between;margin-top:12px">
-<span>ANALYSIS PROGRESS</span><b id="pct">0%</b>
-</div>
-<div class="track"><div id="bar"></div></div>
-<div id="status">● READY — AWAITING INITIALIZATION</div>
-</section>
-<section>
-<small>03 / SESSION REPORT</small>
-<div id="report" class="muted">No session completed.</div>
-</section>
-<footer>VISUAL SIMULATION ONLY · NO DEVICE ACCESS · NO DATA COLLECTION</footer>
+<p class="notice">Interactive storefront demo · No real products, payments, or personal information are collected.</p>
 </main>
+<section id="checkout"><main><button class="back" onclick="showStore()">← Back to store</button><div class="panel"><span class="pill">ORDER SUMMARY</span><h1 id="itemName">Your item</h1><div class="cartline"><span>Item price</span><strong id="itemPrice"></strong></div><div class="cartline"><span>Delivery</span><strong>FREE</strong></div><div class="cartline"><span>Total</span><strong id="total"></strong></div><p style="color:#687386;font-size:13px;line-height:1.5">This is a pretend checkout. No payment details are needed.</p><button class="btn" onclick="startScan()">Place demo order</button><p class="notice">DEMO ONLY · Nothing will be purchased</p></div></main></section>
+<section id="scan"><div class="scanwrap"><div class="scanhead"><b>◈ NOVACART // ORDER SERVICE</b><span id="state">● CONNECTED</span></div><div class="scanTitle">ORDER VERIFICATION</div><div class="scanmuted">Simulated checkout diagnostics · Demo session</div><div style="margin:18px 0">ORDER: <span id="orderId">NC-0000</span><br>ITEM: <span id="scanItem">DEMO PRODUCT</span></div><div class="track"><div class="bar" id="bar"></div></div><p id="pct">0%</p><div class="log" id="logs" aria-live="polite">[SYS] Demo order created.\n[SYS] Waiting for verification sequence...</div><div id="result"></div><button class="btn" style="background:#123b21;color:#a9ffc1;border:1px solid #327c49" onclick="resetDemo()">RETURN TO STORE</button><p class="scanmuted" style="font-size:11px;margin-top:16px">VISUAL PRANK SIMULATION ONLY · NO DEVICE ACCESS · NO DATA COLLECTION</p></div></section>
 <script>
-const $=id=>document.getElementById(id);
-let job=null;
-const events=[
-"[BOOT] Loading diagnostic modules ............. OK",
-"[NET] Checking simulated link state ........... OK",
-"[ROUTE] Building fictional route table ........ OK",
-"[SCAN] Enumerating demo endpoints .............",
-"[SCAN] Service map generated .................. OK",
-"[AUTH] Checking demonstration token ........... OK",
-"[MEM] Allocating visual analysis buffer ....... OK",
-"[SEC] Running simulated security checks .......",
-"[CHECK] Integrity report compiled ............. OK",
-"[SYS] Finalizing diagnostic sequence .......... OK",
-"[DONE] Diagnostic simulation completed."
-];
-function reset(){
-if(job)clearInterval(job);
-job=null;$("start").disabled=false;
-$("bar").style.width="0%";$("pct").textContent="0%";
-$("link").textContent="IDLE";$("proc").textContent="WAITING";
-$("live").textContent="● STANDBY";
-$("status").textContent="● READY — AWAITING INITIALIZATION";
-$("status").className="";
-$("terminal").textContent="[SYS] Console initialized.\n[SYS] Waiting for operator command...";
-$("report").textContent="No session completed.";
-}
-$("reset").onclick=reset;
-$("start").onclick=()=>{
-reset();
-$("start").disabled=true;
-const name=$("target").value.replace(/[<>]/g,"").slice(0,40)||"ENDPOINT";
-$("sid").textContent="NX-"+Math.random().toString(16).slice(2,6).toUpperCase()+"-"+Math.random().toString(16).slice(2,6).toUpperCase();
-$("link").textContent="ACTIVE";
-$("proc").textContent="RUNNING";
-$("live").textContent="● PROCESS ACTIVE";
-$("terminal").textContent="[SESSION] "+name+"\n[SYS] Starting visual diagnostic...\n";
-let i=0;
-job=setInterval(()=>{
-if(i<events.length){
-$("terminal").textContent+=events[i]+"\n";
-$("terminal").scrollTop=$("terminal").scrollHeight;
-let p=Math.round((i+1)/events.length*100);
-$("bar").style.width=p+"%";$("pct").textContent=p+"%";
-$("status").textContent="● PROCESSING — "+p+"%";
-if(i>6)$("status").className="alert";
-i++;
-}else{
-clearInterval(job);job=null;
-$("start").disabled=false;
-$("link").textContent="COMPLETE";
-$("proc").textContent="FINISHED";
-$("live").textContent="● SESSION CLOSED";
-$("status").className="";
-$("status").textContent="● SIMULATION COMPLETE";
-$("report").textContent="Demo sequence finished. No real device was scanned or accessed.";
-$("terminal").textContent+="\n[SYS] Session closed.\n[SYS] Awaiting next command.\n";
-$("terminal").scrollTop=$("terminal").scrollHeight;
-}
-},750);
-};
+const $=id=>document.getElementById(id);let selected="",price=0,interval=null;
+function buy(name,cost){selected=name;price=cost;$("store").style.display="none";$("checkout").style.display="block";$("itemName").textContent=name;$("itemPrice").textContent="₹"+cost.toLocaleString("en-IN");$("total").textContent="₹"+cost.toLocaleString("en-IN");window.scrollTo(0,0)}
+function showStore(){$("checkout").style.display="none";$("store").style.display="block";window.scrollTo(0,0)}
+function startScan(){$("storeHeader").style.display="none";$("store").style.display="none";$("checkout").style.display="none";$("scan").style.display="block";$("scanItem").textContent=selected.toUpperCase();$("orderId").textContent="NC-"+Math.random().toString(36).slice(2,6).toUpperCase();runLogs();window.scrollTo(0,0)}
+function runLogs(){if(interval)clearInterval(interval);let lines=["[ORDER] Demo order received... OK","[CHECK] Verifying fictional order token... OK","[NET] Simulating secure connection...","[SCAN] Running visual endpoint scan...","[WARN] Demo anomaly pattern detected","[AUTH] Mock verification challenge passed","[SYS] Compiling fictional diagnostics...","[CHECK] No real device inspection performed","[DONE] Demo sequence complete"];let i=0;$("logs").textContent="[SYS] Starting order verification...\n";$("result").innerHTML="";$("bar").style.width="0%";$("pct").textContent="0%";$("state").textContent="● PROCESSING";interval=setInterval(()=>{if(i<lines.length){$("logs").textContent+=lines[i]+"\n";$("logs").scrollTop=$("logs").scrollHeight;let p=Math.round((i+1)/lines.length*100);$("bar").style.width=p+"%";$("pct").textContent=p+"%";i++}else{clearInterval(interval);interval=null;$("state").textContent="● COMPLETE";$("result").innerHTML='<div class="done">ACCESS GRANTED</div><p class="warning">Just a simulated sequence. No phone was hacked.</p>';$("logs").textContent+="\n[SYS] Session closed.\n";$("logs").scrollTop=$("logs").scrollHeight}},850)}
+function resetDemo(){if(interval)clearInterval(interval);interval=null;$("scan").style.display="none";$("storeHeader").style.display="block";$("store").style.display="block";$("checkout").style.display="none";$("state").textContent="● CONNECTED";window.scrollTo(0,0)}
 </script>
 </body>
-  </html>
+</html>
